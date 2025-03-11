@@ -5,14 +5,13 @@ export interface IconProps {
 }
 
 withDefaults(defineProps<IconProps>(), {
-  size: '1.5rem',
-  fill: 'black'
+  fill: 'white'
 });
 </script>
 
 <template>
-  <svg :width="size" :height="size" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6 4H18M4 11H20M3 18L21 18M9.0002 3.00005L4.00009 21M20 21L15 3" :stroke="fill" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" :stroke="fill" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 </template>
 

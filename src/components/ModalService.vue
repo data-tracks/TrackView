@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useModalStore } from '@/stores/modal'
+import { useModalStore } from '../stores/modal'
 import { storeToRefs } from 'pinia'
-import Modal from '@/components/default/Modal.vue'
+import Modal from '../components/default/Modal.vue'
 
 const store = useModalStore()
 

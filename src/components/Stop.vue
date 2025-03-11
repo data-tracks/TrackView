@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ConfigModel, type Destination, InOut, type Source, type Stop, usePlanStore } from '@/stores/plan'
-import Button from '@/components/default/Button.vue'
-import { useModalStore } from '@/stores/modal'
-import { useThemeStore } from '@/stores/theme'
+import { ConfigModel, type Destination, InOut, type Source, type Stop, usePlanStore } from '../stores/plan'
+import Button from '../components/default/Button.vue'
+import { useModalStore } from '../stores/modal'
+import { useThemeStore } from '../stores/theme'
 import { storeToRefs } from 'pinia'
-import Config from '@/components/Config.vue'
-import Adder from '@/components/Adder.vue'
-import { Addable, useOptionsStore } from '@/stores/options'
-import InOutConfiguration from '@/components/InOutConfiguration.vue'
+import Config from '../components/Config.vue'
+import Adder from '../components/Adder.vue'
+import { Addable, useOptionsStore } from '../stores/options'
+import InOutConfiguration from '../components/InOutConfiguration.vue'
 import { markRaw } from 'vue'
 
 

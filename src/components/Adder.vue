@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Addable } from '@/stores/options'
+import type { Addable } from '../stores/options'
 
 const props = defineProps<{
   adds: Addable[]

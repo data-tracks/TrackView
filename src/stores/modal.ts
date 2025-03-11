@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { type Component, type Ref, ref } from 'vue'
-import Empty from '@/components/Empty.vue'
+import Empty from '../components/Empty.vue'
 
 export const useModalStore = defineStore('modal', () => {
   const visible = ref(false)

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
 import {computed, onMounted, ref, watchEffect} from 'vue'
-import {type Link, type Node, type Plan, type Stop, usePlanStore} from '@/stores/plan'
+import {type Link, type Node, type Plan, type Stop, usePlanStore} from '../stores/plan'
 import {v4} from 'uuid'
-import {useModalStore} from '@/stores/modal'
-import {useThemeStore} from '@/stores/theme'
+import {useModalStore} from '../stores/modal'
+import {useThemeStore} from '../stores/theme'
 import {storeToRefs} from 'pinia'
 
 const X_GAP = 100

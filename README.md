@@ -1,4 +1,4 @@
-# 🚂 DataTracks - UI
+# 🚂 DataTracks - DataView
 
 A modern and intuitive user interface for DataTracks, a blazingly fast stream processing engine. Built using Vue.js with Pinia for state management, this UI makes it easy to set up and manage data stream processing tasks with minimal hassle.
 

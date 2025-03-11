@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import axios from 'axios'
-import { ToastType, useToastStore } from '@/stores/toast'
-import { IS_DUMMY_MODE, PORT } from '@/stores/plan'
+import { ToastType, useToastStore } from '../stores/toast'
+import { IS_DUMMY_MODE, PORT } from '../stores/plan'
 
 export const useMetaStore = defineStore('meta', () => {
   const connectionStatus = ref(Status.Disconnected);

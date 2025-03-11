@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia'
 import {type Ref, ref} from 'vue'
 import axios from 'axios'
-import {ToastType, useToastStore} from '@/stores/toast'
-import Stop from '@/components/Stop.vue'
+import {ToastType, useToastStore} from '../stores/toast'
+import Stop from '../components/Stop.vue'
 
 export const PORT = import.meta.env.VITE_PORT || 8080
 export const IS_DUMMY_MODE = import.meta.env.VITE_MODE == 'dummy' || false

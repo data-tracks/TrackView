@@ -1,33 +1,25 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
-import Toast from '@/components/Toast.vue'
-import ModalService from '@/components/ModalService.vue'
-import { useThemeStore } from '@/stores/theme'
-import { storeToRefs } from 'pinia'
-
-const themeStore = useThemeStore();
-
-const {isDark} = storeToRefs(themeStore);
+import Header from './components/Header.vue'
+import Footer from './components/Footer.vue'
+import Toast from './components/Toast.vue'
+import ModalService from './components/ModalService.vue'
 
 </script>
 
 <template>
-  <div class="flex h-full flex-col">
-    <div class="content flex flex-row grow">
-      <Header />
-      <main class="grow flex flex-col" :class="{'bg-gray-700' : isDark}">
-        <Toast />
-        <ModalService />
-        <router-view v-slot="{ Component }" class="grow">
-          <transition name="fade" mode="out-in" :duration="{ enter: 300, leave: 100 }">
-            <component :is="Component" />
-          </transition>
-        </router-view>
-        <Footer />
-      </main>
-    </div>
+  <div class="app h-full w-full p-4">
+    <ModalService class="absolute" />
+    <Toast class="absolute" />
+    <Header class="header" />
+    <main class="content content-center items-center">
+      <router-view v-slot="{ Component }" class="grow">
+        <transition name="fade" mode="out-in" :duration="{ enter: 300, leave: 100 }">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </main>
+    <Footer class="footer" />
   </div>
 </template>
 
@@ -49,5 +41,23 @@ body {
 .fade-leave-to {
   opacity: 0;
 }
+
+.app {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  grid-template-rows: 1fr min-content;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "menu content"
+    "footer footer";
+}
+
+.footer { grid-area: footer; }
+
+.menu { grid-area: menu; }
+
+.content { grid-area: content; }
+
+
 
 </style>

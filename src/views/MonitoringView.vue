@@ -1,21 +1,17 @@
 <script setup lang="ts">
-import DefaultLayout from '@/layout/DefaultLayout.vue'
-import Plan from '@/components/Plan.vue'
-import Card from '@/components/default/Card.vue'
-import { getStop, PlanStatus, usePlanStore } from '@/stores/plan'
+import DefaultLayout from '../layout/DefaultLayout.vue'
+import Plan from '../components/Plan.vue'
+import Card from '../components/default/Card.vue'
+import { getStop, PlanStatus, usePlanStore } from '../stores/plan'
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useThemeStore } from '@/stores/theme'
-import Stop from '@/components/Stop.vue'
+import { useThemeStore } from "../stores/theme"
+import Stop from '../components/Stop.vue'
 import { PauseBoxIcon, PlayBoxIcon } from 'mdi-vue3'
 
 let store = usePlanStore()
 
 const { plans } = storeToRefs(store)
-
-let theme = useThemeStore()
-
-const { isDark } = useThemeStore()
 
 onMounted(async () => {
   await store.fetchPlans()
@@ -43,7 +39,6 @@ onMounted(async () => {
           </div>
         </template>
 
-        <Plan :plan="plan" />
 
         <template v-slot:bottom v-if="store.currentNumbers.get(plan.id) || store.currentNumbers.get(plan.id) === 0">
           <div class="px-3 flex flex-col">

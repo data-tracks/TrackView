@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import DefaultLayout from '@/layout/DefaultLayout.vue'
-import Button from '@/components/default/Button.vue'
-import Form from '@/components/default/Form.vue'
+import DefaultLayout from '../layout/DefaultLayout.vue'
+import Button from '../components/default/Button.vue'
+import Form from '../components/default/Form.vue'
 import { ref } from 'vue'
-import { usePlanStore } from '@/stores/plan'
-import Card from '@/components/default/Card.vue'
-import { useThemeStore } from '@/stores/theme'
-import { storeToRefs } from 'pinia'
+import { usePlanStore } from '../stores/plan'
+import Card from '../components/default/Card.vue'
 
 const schedule = ref('')
 const name = ref('')
@@ -22,10 +20,6 @@ const submit = async () => {
   await store.submitPlan(name.value, schedule.value)
   reset()
 }
-
-const themeStore = useThemeStore();
-
-const {isDark} = storeToRefs(themeStore);
 
 const FORM_STYLES = "border-0 rounded-sm p-1 shadow ring-1 ring-inset ring-gray-300 focus:ring-2 placeholder:text-gray-500"
 </script>

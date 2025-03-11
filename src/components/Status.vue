@@ -1,8 +1,8 @@
 <script setup lang="ts">
 
-import { useThemeStore } from '@/stores/theme'
+import { useThemeStore } from '../stores/theme'
 import { storeToRefs } from 'pinia'
-import { Status, useMetaStore } from '@/stores/meta'
+import { Status, useMetaStore } from '../stores/meta'
 import { ArrowDownBoldIcon, ArrowUpBoldIcon } from 'mdi-vue3'
 
 const themeStore = useThemeStore()

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Destination, Source, Stop } from '@/stores/plan'
+import type { Destination, Source, Stop } from '../stores/plan'
 
 const props = defineProps<{
   inOut: Source | Destination

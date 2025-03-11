@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useModalStore } from '@/stores/modal'
+import { useModalStore } from '../../stores/modal'
 
 defineProps<{
   visible: boolean

@@ -1,8 +1,8 @@
 import {type Ref, ref} from 'vue'
 import {defineStore} from 'pinia'
-import {ConfigContainer, type ConfigModel, type Destination, IS_DUMMY_MODE, PORT, type Source} from '@/stores/plan'
+import {ConfigContainer, type ConfigModel, type Destination, IS_DUMMY_MODE, PORT, type Source} from '../stores/plan'
 import axios from 'axios'
-import {ToastType, useToastStore} from '@/stores/toast'
+import {ToastType, useToastStore} from '../stores/toast'
 
 export type SourceDestinationModel = {
   type_name: string,

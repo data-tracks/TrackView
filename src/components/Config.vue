@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ConfigModel } from '@/stores/plan'
+import { ConfigModel } from '../stores/plan'
 
 const props = defineProps<{
   key_: string,
