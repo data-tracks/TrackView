@@ -1,1 +1,1 @@
-declare module "@protocol/protocol";
+declare module "@protocol/protocol/message";
