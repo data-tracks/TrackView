@@ -1,8 +1,17 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "types": [
       "node"
-    ]
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@protocol/*": [
+        "./external/flatbuffers/generated/ts/src/*"
+      ]
+    }
   },
   "files": [],
   "references": [
@@ -11,9 +20,6 @@
     },
     {
       "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.vitest.json"
     }
   ]
 }

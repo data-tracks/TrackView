@@ -1,14 +1,21 @@
 import { defineStore } from 'pinia'
-import { flatbuffers } from "flatbuffers";
-import {Command} from "../../external/flatbuffers/generated/ts/src/protocol";
+import * as flatbuffers from "flatbuffers";
+import {Command} from "@protocol/protocol";
+import {ByteBuffer} from "flatbuffers";
+
+async function translate(res: Response) {
+    const buffer = await res.arrayBuffer();
+    return  new flatbuffers.ByteBuffer(new Uint8Array(buffer));
+}
+
+export async function translateCommand(res: Response): Message{
+    return Command.getRootAsCommand(translateCommand(res));
+}
 
 export const useCommunicationStore = defineStore('communication', () => {
     const fetching = async () => {
-        const response = await fetch("http://localhost:3000/user");
-        const buffer = await response.arrayBuffer();
-        const byteBuffer = new flatbuffers.ByteBuffer(new Uint8Array(buffer));
-        const command = Command.getRootAsCommand(byteBuffer);
+
     }
 
-    return { fetch }
+    return {  }
 })
