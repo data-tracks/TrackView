@@ -3,10 +3,12 @@ import { computed, ref } from 'vue'
 import axios from 'axios'
 import { ToastType, useToastStore } from '../stores/toast'
 import { IS_DUMMY_MODE, PORT } from '../stores/plan'
+import {useConfigStore} from "@/stores/config";
 
 export const useMetaStore = defineStore('meta', () => {
   const connectionStatus = ref(Status.Disconnected);
   const toast = useToastStore()
+  const config = useConfigStore()
 
   const timout = setTimeout( async () => {
     await getStatus();
@@ -19,7 +21,7 @@ export const useMetaStore = defineStore('meta', () => {
     }
 
     try {
-      const {data, status } = await axios.get<GetStatus>(`http://localhost:${PORT}/status`)
+      const {data, status } = await axios.get<GetStatus>(`http://localhost:${config.port}/status`)
 
       if (status !== 200 || !data.status) {
         connectionStatus.value = Status.Error;

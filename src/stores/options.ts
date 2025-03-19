@@ -3,6 +3,7 @@ import {defineStore} from 'pinia'
 import {ConfigContainer, type ConfigModel, type Destination, IS_DUMMY_MODE, PORT, type Source} from '../stores/plan'
 import axios from 'axios'
 import {ToastType, useToastStore} from '../stores/toast'
+import {useConfigStore} from "../stores/config";
 
 export type SourceDestinationModel = {
   type_name: string,
@@ -28,6 +29,7 @@ export const useOptionsStore = defineStore('options', () => {
   const sourcesDestinations: Ref<SourceDestinationModel[]> = ref([])
 
   const toast = useToastStore();
+  const config = useConfigStore();
 
   const sources:Ref<Source[]> = ref([]);
 
@@ -46,7 +48,8 @@ export const useOptionsStore = defineStore('options', () => {
     }
 
     try {
-      const { data, status } = await axios.get<GetOptions>('http://localhost:' + PORT + '/options')
+
+      const { data, status } = await axios.get<GetOptions>(`http://localhost:${config.port}/options`)
 
       if (status !== 200 || !data.destinations || !data.sources) {
         return

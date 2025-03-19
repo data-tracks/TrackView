@@ -3,6 +3,7 @@ import {type Ref, ref} from 'vue'
 import axios from 'axios'
 import {ToastType, useToastStore} from '../stores/toast'
 import Stop from '../components/Stop.vue'
+import {useConfigStore} from "../stores/config";
 
 export const PORT = import.meta.env.VITE_PORT || 8080
 export const IS_DUMMY_MODE = import.meta.env.VITE_MODE == 'dummy' || false
@@ -181,9 +182,10 @@ type GetPlansResponse = {
 
 
 export const usePlanStore = defineStore('plan', () => {
-  const plans: Ref<Array<Plan>> = ref([])
-  const toast = useToastStore()
-  const currentNumbers = ref(new Map<number, number | null>())
+  const plans: Ref<Array<Plan>> = ref([]);
+  const toast = useToastStore();
+  const config = useConfigStore();
+  const currentNumbers = ref(new Map<number, number | null>());
 
   const setCurrent = (planId: number, stop: number | null) => {
     currentNumbers.value.set(planId, stop)
@@ -216,7 +218,7 @@ export const usePlanStore = defineStore('plan', () => {
 
   const submitPlan = async (name: string, plan: string) => {
     try {
-      await axios.post(`http://localhost:${PORT}/plans/create`, {name: name, plan: plan})
+      await axios.post(`http://localhost:${config.port}/plans/create`, {name: name, plan: plan})
       toast.addToast(`Successfully created plan: ${name}.`)
     } catch (error) {
       toast.addToast(error as string, ToastType.error)
@@ -225,7 +227,7 @@ export const usePlanStore = defineStore('plan', () => {
 
   const startPlan = async (planId: number) => {
     try {
-      await axios.post(`http://localhost:${PORT}/plans/start`, {plan_id: planId})
+      await axios.post(`http://localhost:${config.port}/plans/start`, {plan_id: planId})
       toast.addToast(`Successfully started plan: ${planId}.`)
     } catch (error) {
       toast.addToast(error as string, ToastType.error)
@@ -234,7 +236,7 @@ export const usePlanStore = defineStore('plan', () => {
 
   const stopPlan = async (planId: number) => {
     try {
-      await axios.post(`http://localhost:${PORT}/plans/stop`, {plan_id: planId})
+      await axios.post(`http://localhost:${config.port}/plans/stop`, {plan_id: planId})
       toast.addToast(`Successfully stopped plan: ${planId}.`)
     } catch (error) {
       toast.addToast(error as string, ToastType.error)
@@ -248,7 +250,7 @@ export const usePlanStore = defineStore('plan', () => {
     }
 
     try {
-      const {data, status} = await axios.get<GetPlansResponse>(`http://localhost:${PORT}/plans`)
+      const {data, status} = await axios.get<GetPlansResponse>(`http://localhost:${config.port}/plans`)
 
       if (status !== 200 || !data.plans) {
         return
@@ -267,7 +269,7 @@ export const usePlanStore = defineStore('plan', () => {
       return
     }
     try {
-      await axios.post(`http://localhost:${PORT}/inouts/create`, {
+      await axios.post(`http://localhost:${config.port}/inouts/create`, {
         plan_id: planId,
         stop_id: stopId,
         type_name: typeName,

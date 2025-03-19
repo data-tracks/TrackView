@@ -2,6 +2,8 @@
 import {onMounted, onUnmounted, ref} from "vue";
 import {deserializeMessage, serializeMessage} from "../stores/communication";
 import {ToastType, useToastStore} from "../stores/toast";
+import {useConfigStore} from "../stores/config";
+import {storeToRefs} from "pinia";
 
 const messages = ref<string[]>([]);
 let socket: WebSocket | null = null;
@@ -12,7 +14,9 @@ const readMessage = async (event: MessageEvent) => {
 
 const toast = useToastStore();
 
+const config = useConfigStore();
 
+const {port} = storeToRefs(config);
 
 // Function to send a message
 const sendMessage = async () => {
@@ -45,6 +49,9 @@ onUnmounted(() => {
 <template>
   <div class="container">
     <h2>Incoming Messages</h2>
+
+    <p>Port</p>
+    <input type="text" v-model="port" />
 
     <ul class="mt-4">
       <li v-for="(msg, index) in messages" :key="index">{{ msg }}</li>

@@ -1,25 +1,7 @@
 {
-  "compilerOptions": {
-    "declaration": true,
-    "types": [
-      "node"
-    ],
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@protocol/*": [
-        "./external/flatbuffers/generated/ts/src/*"
-      ]
-    }
-  },
   "files": [],
   "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    }
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
   ]
 }

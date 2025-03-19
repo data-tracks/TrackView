@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import * as flatbuffers from "flatbuffers";
-import {Message, Payload} from "/external/flatbuffers/generated/ts/src/protocol";
+import {Message} from "../../external/flatbuffers/generated/ts/src/protocol/message";
 
 
 async function translate(res: Response) {
@@ -15,8 +15,7 @@ export async function deserializeMessage(res: Response): Promise<Message>{
 export async function serializeMessage(msg: string) {
     // Create a FlatBuffer message
     const builder = new flatbuffers.Builder(1024);
-    const textOffset = builder.createString(msg);
-
+    builder.createString(msg);
     Message.startMessage(builder);
     const messageOffset = Message.endMessage(builder);
 
@@ -26,9 +25,7 @@ export async function serializeMessage(msg: string) {
 }
 
 export const useCommunicationStore = defineStore('communication', () => {
-    const fetching = async () => {
 
-    }
 
     return {  }
 })
