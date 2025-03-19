@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="flex flex-col pb-16 min-w-[400px] justify-self-center">
+  <div class="flex flex-col pb-16 min-w-[400px] justify-self-center container">
     <h1 class="text-xl mb-3 font-bold px-2 w-auto">
        Console
     </h1>
