@@ -1,11 +1,11 @@
 import {defineStore} from 'pinia'
 import {type Ref, ref} from 'vue'
 import axios from 'axios'
-import {ToastType, useToastStore} from '../stores/toast'
+import {ToastType, useToastStore} from './toast'
 import Stop from '../components/Stop.vue'
-import {useConfigStore} from "../stores/config";
+import {useConfigStore} from "./config";
 
-export const PORT = import.meta.env.VITE_PORT || 8080
+export const PORT = import.meta.env.VITE_PORT || 2666
 export const IS_DUMMY_MODE = import.meta.env.VITE_MODE == 'dummy' || false
 
 type Line = {
@@ -64,7 +64,7 @@ function capitalize(str: string): string {
 }
 
 class BaseConfig {
-  constructor(obj: Object = {}) {
+  constructor(_obj: Object = {}) {
 
   }
 }

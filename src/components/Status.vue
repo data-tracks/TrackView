@@ -1,29 +1,26 @@
 <script setup lang="ts">
 
-import { useThemeStore } from '../stores/theme'
-import { storeToRefs } from 'pinia'
-import { Status, useMetaStore } from '../stores/meta'
 import { ArrowDownBoldIcon, ArrowUpBoldIcon } from 'mdi-vue3'
+import {Status, useConnectionStore} from "../stores/connection";
+import {storeToRefs} from "pinia";
 
-const themeStore = useThemeStore()
 
-const { isDark } = storeToRefs(themeStore)
+const connection = useConnectionStore();
 
-const metaStore = useMetaStore();
+const {isConnected} = storeToRefs(connection);
 
-const {connectionStatus} = storeToRefs(metaStore);
 
 </script>
 
 <template>
 <div>
-  <div class="text-green-400 flex gap-2" v-if="connectionStatus === Status.Connected">
+  <div class="text-green-400 flex gap-2" v-if="isConnected">
     <ArrowUpBoldIcon width="1rem" class="fill-green-400"  />
-    {{connectionStatus}}
+    {{Status.Connected}}
   </div>
   <div class="text-red-400 flex gap-2" v-else>
     <ArrowDownBoldIcon width="1rem" class="fill-red-400"  />
-    {{connectionStatus}}
+    {{Status.Disconnected}}
   </div>
 </div>
 </template>

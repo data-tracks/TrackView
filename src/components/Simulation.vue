@@ -1,48 +1,30 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, ref} from "vue";
-import {deserializeMessage, serializeMessage} from "../stores/communication";
-import {ToastType, useToastStore} from "../stores/toast";
+import {useConnectionStore} from "../stores/connection";
 import {useConfigStore} from "../stores/config";
 import {storeToRefs} from "pinia";
 
 const messages = ref<string[]>([]);
-let socket: WebSocket | null = null;
 
-const readMessage = async (event: MessageEvent) => {
-  messages.value.push((await deserializeMessage(event.data)).toString());
-}
+const communication = useConnectionStore();
 
-const toast = useToastStore();
+const {addListener, removeListener, sendMessage} = communication;
+let id = -1;
 
 const config = useConfigStore();
-
 const {port} = storeToRefs(config);
 
-// Function to send a message
-const sendMessage = async () => {
-  if (!socket || socket.readyState !== WebSocket.OPEN) {
-    toast.addToast("WebSocket is not connected", ToastType.error);
-    return;
-  }
-  const buffer = serializeMessage("");
-  socket.send(await buffer); // Send the encoded message
-  toast.addToast("Send message");
-}
-
 onMounted(() => {
-  // Open a WebSocket connection
-  socket = new WebSocket("ws://localhost:3000");
-
-  // Listen for messages
-  socket.addEventListener("message", readMessage);
+  id = addListener(() =>  {
+    messages.value.push(messages.value[0]);
+    if (messages.value.length > 5) {
+      messages.value.splice(0, 5);
+    }
+  })
 });
 
 onUnmounted(() => {
-  // Clean up WebSocket connection
-  if (socket) {
-    socket.close();
-    socket = null;
-  }
+  removeListener(id);
 });
 </script>
 
@@ -56,7 +38,7 @@ onUnmounted(() => {
     <ul class="mt-4">
       <li v-for="(msg, index) in messages" :key="index">{{ msg }}</li>
     </ul>
-    <button class="btn" @click="sendMessage">Send Message</button>
+    <button class="btn" @click="sendMessage('test')">Send Message</button>
   </div>
 </template>
 
