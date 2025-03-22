@@ -1,14 +1,16 @@
 <script setup lang="ts">
 
 import Simulation from "../components/Simulation.vue";
+import Card from "@/components/default/Card.vue";
+import DefaultLayout from "@/layout/DefaultLayout.vue";
 </script>
 
 <template>
-  <div class="container justify-self-center">
-    <div class="stats card bg-black/50 p-5 min-w-[500px] grid-cols-1 grid">
+  <default-layout title="Simulation">
+    <Card :has-padding="true">
       <Simulation />
-    </div>
-  </div>
+    </Card>
+  </default-layout>
 </template>
 
 <style scoped>

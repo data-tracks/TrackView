@@ -1,11 +1,9 @@
 import {defineStore} from 'pinia'
 import * as flatbuffers from "flatbuffers";
-import {Message} from "../../external/flatbuffers/generated/ts/src/protocol/message";
-import {Status as ProtoStatus} from "../../external/flatbuffers/generated/ts/src/protocol/status";
+import {Builder} from "flatbuffers";
 import {ref} from "vue";
 import {useConfigStore} from "./config";
-import {Query} from "../../external/flatbuffers/generated/ts/src/protocol/query";
-import {Payload} from "../../external/flatbuffers/generated/ts/src/protocol/payload";
+import { Register, Create, CreatePlan, CreateType, Message, Payload} from "trackrails"
 
 
 async function translate(res: Response) {
@@ -17,36 +15,39 @@ export async function deserializeMessage(res: Response): Promise<Message>{
     return Message.getRootAsMessage(await translate(res));
 }
 
-export async function serializeMessage(msg: string): Promise<Uint8Array> {
-    // Create a FlatBuffer message
-    const builder = new flatbuffers.Builder(1024);
-    const message = builder.createString(msg);
+export function serializeCreatePlan(name: string, plan: string) {
+    return buildMessage((builder: Builder) => {
+        const nameOffset = builder.createString(name);
+        const planOffset = builder.createString(plan);
 
-    ProtoStatus.startStatus(builder);
-    ProtoStatus.addMsg(builder, message);
-    const status = ProtoStatus.endStatus(builder);
-    Message.startMessage(builder);
-    Message.addStatus(builder, status)
+        CreatePlan.startCreatePlan(builder);
+        CreatePlan.addPlan(builder, planOffset);
+        CreatePlan.addName(builder, nameOffset);
+        let createPlanOffset = CreatePlan.endCreatePlan(builder);
 
-    const messageOffset = Message.endMessage(builder);
-
-    builder.finish(messageOffset);
-
-    return builder.asUint8Array();
+        Create.startCreate(builder);
+        Create.addCreateType(builder, createPlanOffset);
+        Create.addCreateTypeType(builder, CreateType.CreatePlan);
+        return Create.endCreate(builder);
+    }, Payload.Create);
 }
 
-export async function serializeQuery(query: string): Promise<Uint8Array> {
-    // Create a FlatBuffer message
-    const builder = new flatbuffers.Builder(1024);
-    const queryString = builder.createString(query);
+export function serializeRegister() {
+    return buildMessage((b: Builder) => {
+        Register.startRegister(b);
+        return Register.endRegister(b);
+    }, Payload.Register);
+}
 
-    Query.startQuery(builder);
-    Query.addQuery(builder, queryString)
-    let queryOffset = Query.endQuery(builder);
+export function buildMessage(attacher: (builder:Builder) => number, payload: Payload): Uint8Array {
+    const builder = new flatbuffers.Builder(1024);
+
+
+    let createOffset = attacher(builder);
 
     Message.startMessage(builder);
-    Message.addData(builder, queryOffset);
-    Message.addDataType(builder, Payload.Query);
+    Message.addData(builder, createOffset);
+    Message.addDataType(builder, payload);
 
     const messageOffset = Message.endMessage(builder);
 
@@ -68,9 +69,12 @@ export const useConnectionStore = defineStore('communication', () => {
 
         ws.value = new WebSocket(`ws://localhost:${config.port}/ws`)
 
-        ws.value.onopen = () => {
+        ws.value.onopen = async () => {
             console.log("WebSocket connected");
             isConnected.value = true;
+
+            let register = serializeRegister();
+            await sendMessage(register);
         };
 
         ws.value.onmessage = (event) => {
@@ -96,14 +100,11 @@ export const useConnectionStore = defineStore('communication', () => {
         if (ws.value && isConnected.value) {
             ws.value.send(binary);
         } else {
-            console.warn("Cannot send message, WebSocket is not connected.");
+            console.log("Error");
+            throw Error(`WebSocket not connected`);
         }
     };
 
-    const query = async (query: string) => {
-        const binary = await serializeQuery(query);
-        await sendMessage(binary);
-    }
 
     const addListener = (listener: ((event:MessageEvent<any>) => void )) => {
         const id = i.value;
@@ -118,7 +119,7 @@ export const useConnectionStore = defineStore('communication', () => {
 
     connect();
 
-    return { ws, isConnected, connect, addListener, removeListener, query };
+    return { ws, isConnected, connect, addListener, removeListener, sendMessage };
 })
 
 export enum Status {

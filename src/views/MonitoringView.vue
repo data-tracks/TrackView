@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import DefaultLayout from '../layout/DefaultLayout.vue'
-import Card from '../components/default/Card.vue'
-import { getStop, PlanStatus, usePlanStore } from '../stores/plan'
+import { usePlanStore } from '../stores/plan'
 import {onMounted, ref} from 'vue'
 import { storeToRefs } from 'pinia'
-import Stop from '../components/Stop.vue'
-import { PauseBoxIcon, PlayBoxIcon } from 'mdi-vue3'
 
 let store = usePlanStore()
 
 const { plans } = storeToRefs(store)
 
-const stats = ref(new Map<string, string>([["Plans", "3"]]));
+const stats = ref(new Map<string, any>([["Plans", plans.value.length]]));
 
 onMounted(async () => {
   await store.fetchPlans()

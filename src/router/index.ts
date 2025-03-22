@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import TerminalView from "../views/TerminalView.vue";
+import PlannerView from "../views/PlannerView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,12 +7,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: TerminalView
-    },
-    {
-      path: '/info',
-      name: 'info',
-      component: () => import('../views/PlannerView.vue'),
+      component: PlannerView
     },
     {
       path: '/monitor',

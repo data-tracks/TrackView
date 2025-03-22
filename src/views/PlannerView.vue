@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import DefaultLayout from '../layout/DefaultLayout.vue'
-import Button from '../components/default/Button.vue'
-import Form from '../components/default/Form.vue'
-import { ref } from 'vue'
-import { usePlanStore } from '../stores/plan'
+import {ref} from 'vue'
+import {usePlanStore} from '../stores/plan'
 import Card from '../components/default/Card.vue'
+import {ToastType, useToastStore} from "@/stores/toast";
 
 const schedule = ref('')
 const name = ref('')
 
 const store = usePlanStore()
+
+const toast = useToastStore();
 
 const reset = () => {
   schedule.value = ''
@@ -17,33 +18,29 @@ const reset = () => {
 }
 
 const submit = async () => {
-  await store.submitPlan(name.value, schedule.value)
-  reset()
+  await store.submitPlan(name.value, schedule.value).then(() => {
+    reset()
+  }, err => {
+    toast.addToast(err.message, ToastType.error)
+  });
 }
 
-const FORM_STYLES = "border-0 rounded-sm p-1 shadow ring-1 ring-inset ring-gray-300 focus:ring-2 placeholder:text-gray-500"
 </script>
 
 <template>
   <default-layout title="Planner">
     <Card :has-padding="true">
-      <div>
-        <div>Name</div>
-        <Form :is-valid="name !== ''">
-          <input type="text" :class="FORM_STYLES" v-model="name" placeholder="Enter name...">
-        </Form>
-      </div>
+      <fieldset class="fieldset">
+        <label class="fieldset-label">Name</label>
+        <input class="input" type="text" v-model="name" placeholder="Enter name...">
 
-      <div class="flex items-stretch flex-col mt-2">
-        <div>Schedule</div>
-        <Form :is-valid="schedule !== ''">
-          <textarea :class="FORM_STYLES" v-model="schedule" placeholder="Enter schedule..." />
-        </Form>
-      </div>
+        <label class="fieldset-label">Schedule</label>
+        <textarea class="textarea" v-model="schedule" placeholder="Enter schedule..." />
 
-      <div class="mt-3">
-        <Button text="Send" @click="submit" :disabled="schedule === '' || name === ''"></Button>
-      </div>
+        <div class="mt-3">
+          <button class="btn" @click="submit" :disabled="schedule === '' || name === ''">Send</button>
+        </div>
+      </fieldset>
 
     </Card>
   </default-layout>

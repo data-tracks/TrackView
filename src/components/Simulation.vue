@@ -8,7 +8,7 @@ const messages = ref<string[]>([]);
 
 const communication = useConnectionStore();
 
-const {addListener, removeListener, sendMessage} = communication;
+const {addListener, removeListener} = communication;
 let id = -1;
 
 const config = useConfigStore();
@@ -16,7 +16,6 @@ const {port} = storeToRefs(config);
 const message = ref<string>("");
 
 const send = () => {
-  sendMessage(message.value);
   message.value = "";
 }
 
@@ -37,7 +36,6 @@ onUnmounted(() => {
 <template>
   <div class="flex flex-col">
     <div class="container">
-      <h2>Incoming Messages</h2>
       <ul class="mt-4">
         <li v-for="(msg, index) in messages" :key="index">{{ msg }}</li>
       </ul>
@@ -49,9 +47,9 @@ onUnmounted(() => {
         <input class="input" type="text" v-model="port" />
 
         <label class="fieldset-label">Message</label>
-        <div class="join">
-          <input type="text" class="input join-item" v-model="message" />
-          <button class="btn join-item" :disabled="message.trim() == ''" @click="send">Send</button>
+        <input type="text" class="input" v-model="message" />
+        <div class="mt-3">
+          <button class="btn" :disabled="message.trim() == ''" @click="send">Send</button>
         </div>
       </fieldset>
     </div>

@@ -4,6 +4,8 @@ import axios from 'axios'
 import {ToastType, useToastStore} from './toast'
 import Stop from '../components/Stop.vue'
 import {useConfigStore} from "./config";
+import {deserializeMessage, serializeCreatePlan, useConnectionStore} from "./connection";
+import {Catalog} from "trackrails";
 
 export const PORT = import.meta.env.VITE_PORT || 2666
 export const IS_DUMMY_MODE = import.meta.env.VITE_MODE == 'dummy' || false
@@ -176,15 +178,12 @@ export type Link = {
   target: Node
 }
 
-type GetPlansResponse = {
-  plans: any[]
-}
-
 
 export const usePlanStore = defineStore('plan', () => {
   const plans: Ref<Array<Plan>> = ref([]);
   const toast = useToastStore();
   const config = useConfigStore();
+  const connection = useConnectionStore();
   const currentNumbers = ref(new Map<number, number | null>());
 
   const setCurrent = (planId: number, stop: number | null) => {
@@ -217,12 +216,8 @@ export const usePlanStore = defineStore('plan', () => {
   }
 
   const submitPlan = async (name: string, plan: string) => {
-    try {
-      await axios.post(`http://localhost:${config.port}/plans/create`, {name: name, plan: plan})
-      toast.addToast(`Successfully created plan: ${name}.`)
-    } catch (error) {
-      toast.addToast(error as string, ToastType.error)
-    }
+    let binary = await serializeCreatePlan(name, plan);
+    await connection.sendMessage(binary);
   }
 
   const startPlan = async (planId: number) => {
@@ -243,25 +238,6 @@ export const usePlanStore = defineStore('plan', () => {
     }
   }
 
-  const fetchPlans = async () => {
-    if (IS_DUMMY_MODE) {
-      plans.value = _dummyData.map(d => transformPlan(d))
-      return
-    }
-
-    try {
-      const {data, status} = await axios.get<GetPlansResponse>(`http://localhost:${config.port}/plans`)
-
-      if (status !== 200 || !data.plans) {
-        return
-      }
-
-      plans.value = data.plans.map(d => transformPlan(d))
-    } catch (error) {
-      toast.addToast(error as string, ToastType.error)
-      console.log(error)
-    }
-  }
 
   const addInOut = async (planId: number, stopId: number, typeName: string, category: InOut, configs: ConfigModel[]) => {
     if (IS_DUMMY_MODE) {
@@ -277,88 +253,20 @@ export const usePlanStore = defineStore('plan', () => {
         configs
       })
       toast.addToast(`Successfully added :${typeName}.`)
-      await fetchPlans();
     } catch (error) {
       toast.addToast(error as string, ToastType.error)
     }
   }
 
-  return {plans, currentNumbers, setCurrent, submitPlan, fetchPlans, addInOut, startPlan, stopPlan}
-})
+  connection.addListener(async (e:MessageEvent<any>) => {
+    let msg = await deserializeMessage(e.data);
+    let catalog = msg.data(new Catalog());
+    let plans = catalog?.plans();
+    console.log(plans);
+  })
 
-const _dummyData: any[] = [{
-  name: 'Plan Simple',
-  status: "stopped",
-  lines: {
-    0: {
-      num: 0,
-      stops: [0, 1, 3]
-    },
-    1: {
-      num: 1,
-      stops: [4, 1]
-    },
-    2: {
-      num: 2,
-      stops: [5, 1]
-    },
-    3: {
-      num: 3,
-      stops: [6, 7]
-    }
-  },
-  stops: {
-    0: {
-      num: 0,
-      sources: [
-        {
-          type_name: 'mongo',
-          id: 'test_mongo'
-        }
-      ]
-    },
-    1: {
-      num: 1,
-      transform: {
-        name: 'Transform',
-        configs: {
-          'language': {
-            StringConf: {
-              string: 'sql'
-            }
-          },
-          'query':
-            {
-              StringConf: {
-                string: 'SELECT * FROM $1, $4, $5'
-              }
-            }
-        }
-      }
-    },
-    3: {
-      num: 3
-    },
-    4: {
-      num: 4
-    },
-    5: {
-      num: 5
-    },
-    6: {
-      num: 6
-    },
-    7: {
-      num: 7,
-      destinations: [
-        {
-          type_name: 'mqtt',
-          id: 'test_mqtt'
-        }
-      ]
-    }
-  }
-}]
+  return {plans, currentNumbers, setCurrent, submitPlan, addInOut, startPlan, stopPlan}
+})
 
 export enum InOut {
   Source = 'source',
