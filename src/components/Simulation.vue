@@ -13,6 +13,12 @@ let id = -1;
 
 const config = useConfigStore();
 const {port} = storeToRefs(config);
+const message = ref<string>("");
+
+const send = () => {
+  sendMessage(message.value);
+  message.value = "";
+}
 
 onMounted(() => {
   id = addListener(() =>  {
@@ -29,16 +35,26 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="container">
-    <h2>Incoming Messages</h2>
+  <div class="flex flex-col">
+    <div class="container">
+      <h2>Incoming Messages</h2>
+      <ul class="mt-4">
+        <li v-for="(msg, index) in messages" :key="index">{{ msg }}</li>
+      </ul>
+    </div>
+    <div class="container">
+      <h2>Interaction</h2>
+      <fieldset class="fieldset">
+        <label class="fieldset-label">Port</label>
+        <input class="input" type="text" v-model="port" />
 
-    <p>Port</p>
-    <input type="text" v-model="port" />
-
-    <ul class="mt-4">
-      <li v-for="(msg, index) in messages" :key="index">{{ msg }}</li>
-    </ul>
-    <button class="btn" @click="sendMessage('test')">Send Message</button>
+        <label class="fieldset-label">Message</label>
+        <div class="join">
+          <input type="text" class="input join-item" v-model="message" />
+          <button class="btn join-item" :disabled="message.trim() == ''" @click="send">Send</button>
+        </div>
+      </fieldset>
+    </div>
   </div>
 </template>
 

@@ -12,7 +12,7 @@ import ModalService from './components/ModalService.vue'
     <ModalService class="absolute" />
     <Toast class="absolute" />
     <Header class="header" />
-    <main class="content content-center items-center grid">
+    <main class="content content-center items-center grid grid-cols-1">
       <router-view v-slot="{ Component }" class="grow">
         <transition name="fade" mode="out-in" :duration="{ enter: 300, leave: 100 }">
           <component :is="Component" />

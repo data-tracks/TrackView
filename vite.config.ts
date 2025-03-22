@@ -14,7 +14,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@protocol': path.resolve(__dirname, 'external/flatbuffers/generated/ts/src'), // Ensure this line is correct
-            '@': path.resolve(__dirname, 'src'), // Ensure this line is correct
+            '@': path.resolve(__dirname, 'src')
         },
     },
 })
