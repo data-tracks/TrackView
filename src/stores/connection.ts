@@ -1,10 +1,11 @@
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
 import * as flatbuffers from "flatbuffers";
 import {Message} from "../../external/flatbuffers/generated/ts/src/protocol/message";
 import {Status as ProtoStatus} from "../../external/flatbuffers/generated/ts/src/protocol/status";
-import {String as ProtoString} from "../../external/flatbuffers/generated/ts/src/protocol/string";
 import {ref} from "vue";
 import {useConfigStore} from "./config";
+import {Query} from "../../external/flatbuffers/generated/ts/src/protocol/query";
+import {Payload} from "../../external/flatbuffers/generated/ts/src/protocol/payload";
 
 
 async function translate(res: Response) {
@@ -20,14 +21,32 @@ export async function serializeMessage(msg: string): Promise<Uint8Array> {
     // Create a FlatBuffer message
     const builder = new flatbuffers.Builder(1024);
     const message = builder.createString(msg);
-    ProtoString.startString(builder);
-    ProtoString.addData(builder, message);
-    const stringOffset = ProtoString.endString(builder);
+
     ProtoStatus.startStatus(builder);
-    ProtoStatus.addMsg(builder, stringOffset);
+    ProtoStatus.addMsg(builder, message);
     const status = ProtoStatus.endStatus(builder);
     Message.startMessage(builder);
     Message.addStatus(builder, status)
+
+    const messageOffset = Message.endMessage(builder);
+
+    builder.finish(messageOffset);
+
+    return builder.asUint8Array();
+}
+
+export async function serializeQuery(query: string): Promise<Uint8Array> {
+    // Create a FlatBuffer message
+    const builder = new flatbuffers.Builder(1024);
+    const queryString = builder.createString(query);
+
+    Query.startQuery(builder);
+    Query.addQuery(builder, queryString)
+    let queryOffset = Query.endQuery(builder);
+
+    Message.startMessage(builder);
+    Message.addData(builder, queryOffset);
+    Message.addDataType(builder, Payload.Query);
 
     const messageOffset = Message.endMessage(builder);
 
@@ -73,14 +92,18 @@ export const useConnectionStore = defineStore('communication', () => {
         };
     };
 
-    const sendMessage = async (message: string) => {
+    const sendMessage = async (binary: Uint8Array) => {
         if (ws.value && isConnected.value) {
-            const binary = await serializeMessage(message);
             ws.value.send(binary);
         } else {
             console.warn("Cannot send message, WebSocket is not connected.");
         }
     };
+
+    const query = async (query: string) => {
+        const binary = await serializeQuery(query);
+        await sendMessage(binary);
+    }
 
     const addListener = (listener: ((event:MessageEvent<any>) => void )) => {
         const id = i.value;
@@ -95,7 +118,7 @@ export const useConnectionStore = defineStore('communication', () => {
 
     connect();
 
-    return { ws, isConnected, connect, sendMessage, addListener, removeListener };
+    return { ws, isConnected, connect, addListener, removeListener, query };
 })
 
 export enum Status {
