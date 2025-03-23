@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import DefaultLayout from '../layout/DefaultLayout.vue'
 import { usePlanStore } from '../stores/plan'
-import {onMounted, ref} from 'vue'
 import { storeToRefs } from 'pinia'
+import {ref} from "vue";
 
 let store = usePlanStore()
 
 const { plans } = storeToRefs(store)
 
 const stats = ref(new Map<string, any>([["Plans", plans.value.length]]));
-
-onMounted(async () => {
-  await store.fetchPlans()
-})
 
 </script>
 

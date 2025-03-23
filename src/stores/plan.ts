@@ -4,7 +4,7 @@ import axios from 'axios'
 import {ToastType, useToastStore} from './toast'
 import Stop from '../components/Stop.vue'
 import {useConfigStore} from "./config";
-import {deserializeMessage, serializeCreatePlan, useConnectionStore} from "./connection";
+import {deserializeMessage, serializeCreatePlan, serializeRegister, useConnectionStore} from "./connection";
 import {Catalog} from "trackrails";
 
 export const PORT = import.meta.env.VITE_PORT || 2666
@@ -179,7 +179,7 @@ export type Link = {
 }
 
 
-export const usePlanStore = defineStore('plan', () => {
+export const usePlanStore = defineStore('plan', async () => {
   const plans: Ref<Array<Plan>> = ref([]);
   const toast = useToastStore();
   const config = useConfigStore();
@@ -190,7 +190,7 @@ export const usePlanStore = defineStore('plan', () => {
     currentNumbers.value.set(planId, stop)
   }
 
-  const transformPlan = (data: any): Plan => {
+  const _transformPlan = (data: any): Plan => {
     const lines = new Map<number, Line>()
     const stops = new Map<number, Stop>()
 
@@ -259,11 +259,15 @@ export const usePlanStore = defineStore('plan', () => {
   }
 
   connection.addListener(async (e:MessageEvent<any>) => {
+    console.log("plan");
     let msg = await deserializeMessage(e.data);
     let catalog = msg.data(new Catalog());
     let plans = catalog?.plans();
     console.log(plans);
   })
+
+  let catalog = serializeRegister();
+  await connection.sendMessage(catalog);
 
   return {plans, currentNumbers, setCurrent, submitPlan, addInOut, startPlan, stopPlan}
 })

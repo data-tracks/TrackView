@@ -3,7 +3,7 @@ import * as flatbuffers from "flatbuffers";
 import {Builder} from "flatbuffers";
 import {ref} from "vue";
 import {useConfigStore} from "./config";
-import { Register, Create, CreatePlan, CreateType, Message, Payload} from "trackrails"
+import {Create, CreatePlan, CreateType, Message, Payload, Register} from "trackrails"
 
 
 async function translate(res: Response) {
@@ -73,13 +73,13 @@ export const useConnectionStore = defineStore('communication', () => {
             console.log("WebSocket connected");
             isConnected.value = true;
 
-            let register = serializeRegister();
+            const register = serializeRegister();
             await sendMessage(register);
         };
 
-        ws.value.onmessage = (event) => {
+        ws.value.onmessage = async (event) => {
             console.log("Received:", event.data);
-            for (let listener of listeners.value.values()) {
+            for (const listener of listeners.value.values()) {
                 listener(event);
             }
         };
