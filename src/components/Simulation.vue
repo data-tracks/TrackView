@@ -44,10 +44,10 @@ onUnmounted(() => {
       <h2>Interaction</h2>
       <fieldset class="fieldset">
         <label class="fieldset-label">Port</label>
-        <input class="input" type="text" v-model="port" />
+        <input class="input w-full" type="text" v-model="port" />
 
         <label class="fieldset-label">Message</label>
-        <input type="text" class="input" v-model="message" />
+        <input type="text" class="input w-full" v-model="message" />
         <div class="mt-3">
           <button class="btn" :disabled="message.trim() == ''" @click="send">Send</button>
         </div>

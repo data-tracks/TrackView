@@ -32,10 +32,10 @@ const submit = async () => {
     <Card :has-padding="true">
       <fieldset class="fieldset">
         <label class="fieldset-label">Name</label>
-        <input class="input" type="text" v-model="name" placeholder="Enter name...">
+        <input class="input w-full" type="text" v-model="name" placeholder="Enter name...">
 
         <label class="fieldset-label">Schedule</label>
-        <textarea class="textarea" v-model="schedule" placeholder="Enter schedule..." />
+        <textarea class="textarea w-full" v-model="schedule" placeholder="Enter schedule..." />
 
         <div class="mt-3">
           <button class="btn" @click="submit" :disabled="schedule === '' || name === ''">Send</button>

@@ -5,7 +5,7 @@ import {ToastType, useToastStore} from './toast'
 import Stop from '../components/Stop.vue'
 import {useConfigStore} from "./config";
 import {deserializeMessage, serializeCreatePlan, serializeRegister, useConnectionStore} from "./connection";
-import {Catalog} from "trackrails";
+import {Catalog, Plans, Plan as FlatPlan, Register} from "trackrails";
 
 export const PORT = import.meta.env.VITE_PORT || 2666
 export const IS_DUMMY_MODE = import.meta.env.VITE_MODE == 'dummy' || false
@@ -179,7 +179,7 @@ export type Link = {
 }
 
 
-export const usePlanStore = defineStore('plan', async () => {
+export const usePlanStore = defineStore('plan', () => {
   const plans: Ref<Array<Plan>> = ref([]);
   const toast = useToastStore();
   const config = useConfigStore();
@@ -190,30 +190,6 @@ export const usePlanStore = defineStore('plan', async () => {
     currentNumbers.value.set(planId, stop)
   }
 
-  const _transformPlan = (data: any): Plan => {
-    const lines = new Map<number, Line>()
-    const stops = new Map<number, Stop>()
-
-    for (const key in data.lines) {
-      lines.set(Number(key), data.lines[key] as Line)
-    }
-
-    for (const key in data.stops) {
-      const stop = data.stops[key] as Stop
-      if (stop.transform) {
-        stop.transform = ConfigContainer.from(stop.transform as ConfigContainer)
-      }
-      stops.set(Number(key), stop)
-    }
-
-    return {
-      status: data.status || PlanStatus.Stopped,
-      id: data.id,
-      name: data.name,
-      lines: lines,
-      stops: stops
-    }
-  }
 
   const submitPlan = async (name: string, plan: string) => {
     let binary = await serializeCreatePlan(name, plan);
@@ -259,15 +235,34 @@ export const usePlanStore = defineStore('plan', async () => {
   }
 
   connection.addListener(async (e:MessageEvent<any>) => {
-    console.log("plan");
     let msg = await deserializeMessage(e.data);
-    let catalog = msg.data(new Catalog());
-    let plans = catalog?.plans();
-    console.log(plans);
+    const register: Register | null = msg.data(new Register());
+    let catalog: Catalog | null | undefined = register?.catalog(new Catalog());
+
+    let plansModel: Plans | null | undefined = catalog?.plans(new Plans());
+    if (!plansModel) {
+      console.log("No plans found");
+      return;
+    }
+
+    let ps:Plan[] = [];
+    for (let i = 0; i < plansModel?.plansLength(); i++) {
+      const plan = plansModel?.plans(i, new FlatPlan());
+      ps.push({
+        status: PlanStatus.Stopped,
+        id: 0,
+        name: plan?.name() || "undefined",
+        lines: new Map<number, Line>(),
+        stops: new Map<number, Stop>(),
+      });
+    }
+    plans.value = ps;
+
+    console.log(ps);
   })
 
   let catalog = serializeRegister();
-  await connection.sendMessage(catalog);
+  connection.sendMessage(catalog).then(() => {}, err => { console.log(err); });
 
   return {plans, currentNumbers, setCurrent, submitPlan, addInOut, startPlan, stopPlan}
 })

@@ -4,6 +4,7 @@ import {Builder} from "flatbuffers";
 import {ref} from "vue";
 import {useConfigStore} from "./config";
 import {Create, CreatePlan, CreateType, Message, Payload, Register} from "trackrails"
+import {ToastType, useToastStore} from "./toast";
 
 
 async function translate(res: Response) {
@@ -42,7 +43,6 @@ export function serializeRegister() {
 export function buildMessage(attacher: (builder:Builder) => number, payload: Payload): Uint8Array {
     const builder = new flatbuffers.Builder(1024);
 
-
     let createOffset = attacher(builder);
 
     Message.startMessage(builder);
@@ -56,8 +56,19 @@ export function buildMessage(attacher: (builder:Builder) => number, payload: Pay
     return builder.asUint8Array();
 }
 
+function handleRegister(msg: Message): boolean {
+    const register: Register | null = msg.data(new Register());
+    if (!register) {
+        return false;
+    }
+    console.log("id:" + register.id())
+
+    return true;
+}
+
 export const useConnectionStore = defineStore('communication', () => {
     const config = useConfigStore();
+    const toast = useToastStore();
     const ws = ref<WebSocket|null>(null);
     const isConnected = ref(false)
     const listeners = ref(new Map<number, (event: MessageEvent<any>) => void>());
@@ -79,6 +90,11 @@ export const useConnectionStore = defineStore('communication', () => {
 
         ws.value.onmessage = async (event) => {
             console.log("Received:", event.data);
+            let msg = await deserializeMessage(event.data);
+            if(msg.dataType() == Payload.Register && handleRegister(msg)){
+                toast.addToast("Successfully registered");
+            }
+
             for (const listener of listeners.value.values()) {
                 listener(event);
             }
@@ -92,6 +108,7 @@ export const useConnectionStore = defineStore('communication', () => {
             console.log("WebSocket disconnected");
             isConnected.value = false;
             ws.value = null;
+            toast.addToast("Connection closed", ToastType.error);
             setTimeout(connect, 3000); // Auto-reconnect after 3 seconds
         };
     };
