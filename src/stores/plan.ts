@@ -251,7 +251,7 @@ export const usePlanStore = defineStore('plan', () => {
       ps.push({
         status: PlanStatus.Stopped,
         id: 0,
-        name: plan?.name() || "undefined",
+        name: plan?.name() ?? "undefined",
         lines: new Map<number, Line>(),
         stops: new Map<number, Stop>(),
       });
