@@ -33,7 +33,7 @@ export async function createEditor(container: HTMLElement) {
     render.addPreset(
         Presets.classic.setup({
             socketPositionWatcher: getDOMSocketPosition({
-                offset({ x, y }, nodeId, side, key) {
+                offset({ x, y }, _nodeId, side, _key) {
 
                     return {
                         x: x + 8 * (side === 'input' ? -1 : 1),
@@ -44,10 +44,7 @@ export async function createEditor(container: HTMLElement) {
             customize: {
                 node(context) {
                     console.log(context.payload, CustomNode);
-                    if (context.payload.label === "Custom") {
-                        return CustomNode;
-                    }
-                    return Presets.classic.Node;
+                    return CustomNode;
                 },
                 socket(_) {
                     return CustomSocket;
@@ -70,6 +67,7 @@ export async function createEditor(container: HTMLElement) {
     const a = new ClassicPreset.Node("Custom");
     a.addOutput("a", new ClassicPreset.Output(socket));
     a.addInput("a", new ClassicPreset.Input(socket));
+    a.addInput("b", new ClassicPreset.Input(socket));
     await editor.addNode(a);
 
     const b = new ClassicPreset.Node("Custom");

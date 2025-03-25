@@ -11,7 +11,7 @@ let props = defineProps<{
 
 <template>
   <svg data-testid="connection">
-    <path :d="props.path"></path>
+    <path class="stroke-blue-400" :d="props.path"></path>
   </svg>
 </template>
 
@@ -25,7 +25,6 @@ svg {
   path {
     fill: none;
     stroke-width: 3px;
-    stroke: white;
     pointer-events: auto;
   }
 }

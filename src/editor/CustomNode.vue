@@ -7,8 +7,8 @@ const props = defineProps<{
   'seed': string,
 }>()
 
-const sortByIndex = (entries) => {
-  entries.sort((a, b) => {
+const sortByIndex = (entries:any[]) => {
+  entries.sort((a:any[], b:any[]) => {
     const ai = a[1] && a[1].index || 0
     const bi = b[1] && b[1].index || 0
 
@@ -37,12 +37,12 @@ const outputs = () => {
 
 <template>
   <div
-      class="node"
+      class="node bg-blue-100 rounded font-bold text-black  selected:bg-blue-100 hover:bg-blue-300"
       :class="{ selected: data.selected }"
       :style="nodeStyles()"
       data-testid="node"
   >
-    <div class="title" data-testid="title">{{ data.label }}</div>
+    <div class="title p-2 text-center" data-testid="title">{{ data.label }}</div>
     <!-- Outputs-->
     <div
         class="output"
@@ -65,6 +65,10 @@ const outputs = () => {
         }"
           data-testid="output-socket"
       />
+      <div class="sources text-right" style="margin-right: -1px">
+        <div class="source w-4 h-3 bg-blue-300"></div>
+      </div>
+
     </div>
     <!-- Controls-->
     <Ref
@@ -77,7 +81,7 @@ const outputs = () => {
     />
     <!-- Inputs-->
     <div
-        class="input"
+        class=""
         v-for="[key, input] in inputs()"
         :key="key + seed"
         :data-testid="'input-' + key"
@@ -109,6 +113,9 @@ const outputs = () => {
           data-testid="input-control"
       />
     </div>
+    <div class="destinations">
+      <div class="destination w-4 h-3 bg-red-300"></div>
+    </div>
   </div>
 </template>
 
@@ -122,9 +129,6 @@ const outputs = () => {
 @use "vars";
 
 .node {
-  background: black;
-  border: 2px solid grey;
-  border-radius: 10px;
   cursor: pointer;
   box-sizing: border-box;
   width: vars.$node-width;
@@ -133,20 +137,10 @@ const outputs = () => {
   position: relative;
   user-select: none;
 
-  &:hover {
-    background: #333;
-  }
-
   &.selected {
     border-color: red;
   }
 
-  .title {
-    color: white;
-    font-family: sans-serif;
-    font-size: 18px;
-    padding: 8px;
-  }
 
   .output {
     text-align: right;
