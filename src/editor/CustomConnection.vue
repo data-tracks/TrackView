@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
 let props = defineProps<{
-  data: string,
-  start: number,
-  end: number,
+  data: any,
+  start: any,
+  end: any,
   path: string,
 }>()
 

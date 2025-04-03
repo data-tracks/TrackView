@@ -3,8 +3,8 @@ import { Ref } from 'rete-vue-plugin'
 
 const props = defineProps<{
   'data': any,
-  'emit': string,
-  'seed': string,
+  'emit': any,
+  'seed': any,
 }>()
 
 const sortByIndex = (entries:any[]) => {

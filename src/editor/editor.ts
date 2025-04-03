@@ -11,12 +11,20 @@ import {getDOMSocketPosition} from "rete-render-utils";
 import CustomNode from "./CustomNode.vue";
 import CustomSocket from "./CustomSocket.vue";
 import CustomConnection from "./CustomConnection.vue";
+import CustomButton from "./CustomButton.vue";
 
 type Schemes = GetSchemes<
     ClassicPreset.Node,
     ClassicPreset.Connection<ClassicPreset.Node, ClassicPreset.Node>
 >;
 type AreaExtra = VueArea2D<Schemes>;
+
+class ButtonControl extends ClassicPreset.Control {
+    constructor(public label: string, public onClick: () => void) {
+        super();
+    }
+}
+
 
 export async function createEditor(container: HTMLElement) {
     const socket = new ClassicPreset.Socket("socket");
@@ -51,6 +59,11 @@ export async function createEditor(container: HTMLElement) {
                 },
                 connection(_) {
                     return CustomConnection;
+                },
+                control(data){
+                    if (data.payload instanceof ButtonControl) {
+                        return CustomButton;
+                    }
                 }
             }
         })
@@ -68,11 +81,15 @@ export async function createEditor(container: HTMLElement) {
     a.addOutput("a", new ClassicPreset.Output(socket));
     a.addInput("a", new ClassicPreset.Input(socket));
     a.addInput("b", new ClassicPreset.Input(socket));
+    a.addControl("c", new ButtonControl("randomize", () => {
+        console.log("hi");
+    }));
     await editor.addNode(a);
 
     const b = new ClassicPreset.Node("Custom");
     b.addOutput("a", new ClassicPreset.Output(socket));
     b.addInput("a", new ClassicPreset.Input(socket));
+    b.addControl("a", new ClassicPreset.InputControl("text", {change: (value) => {console.log(value)}}));
     await editor.addNode(b);
 
     await area.translate(b.id, { x: 320, y: 0 });
